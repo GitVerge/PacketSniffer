@@ -57,10 +57,10 @@ namespace WowPacketParserModule.V5_4_1_17359.Parsers
             creature.DisplayIds[0] = packet.ReadUInt32("Display ID 0");
             creature.DisplayIds[3] = packet.ReadUInt32("Display ID 3");
 
-            creature.QuestItems = new uint[qItemCount];
+            /*creature.QuestItems = new uint[qItemCount];
             for (var i = 0; i < qItemCount; ++i)
                 creature.QuestItems[i] = (uint)packet.ReadInt32<ItemId>("Quest Item", i);
-
+			*/
             var name = new string[4];
             var femaleName = new string[4];
             for (var i = 0; i < 4; ++i)

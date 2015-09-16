@@ -143,7 +143,7 @@ namespace WowPacketParser.Parsing.Parsers
             else // Did they stop sending pet spell data after 3.1?
             {
                 creature.UnkInt = packet.ReadInt32("Unk Int");
-                creature.PetSpellData = packet.ReadUInt32("Pet Spell Data Id");
+                //creature.PetSpellData = packet.ReadUInt32("Pet Spell Data Id");
             }
 
             creature.DisplayIds = new uint[4];
@@ -155,7 +155,7 @@ namespace WowPacketParser.Parsing.Parsers
 
             creature.RacialLeader = packet.ReadBool("Racial Leader");
 
-            var qItemCount = ClientVersion.AddedInVersion(ClientVersionBuild.V3_2_0_10192) ? 6 : 4;
+            /*var qItemCount = ClientVersion.AddedInVersion(ClientVersionBuild.V3_2_0_10192) ? 6 : 4;
             creature.QuestItems = new uint[qItemCount];
 
             if (ClientVersion.AddedInVersion(ClientVersionBuild.V3_1_0_9767))
@@ -164,7 +164,7 @@ namespace WowPacketParser.Parsing.Parsers
                     creature.QuestItems[i] = (uint)packet.ReadInt32<ItemId>("Quest Item", i);
 
                 creature.MovementId = packet.ReadUInt32("Movement ID");
-            }
+            }*/
 
             if (ClientVersion.AddedInVersion(ClientVersionBuild.V4_0_1_13164))
                 creature.Expansion = packet.ReadUInt32E<ClientType>("Expansion");

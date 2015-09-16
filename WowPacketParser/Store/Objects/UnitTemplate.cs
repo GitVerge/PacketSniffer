@@ -19,14 +19,18 @@ namespace WowPacketParser.Store.Objects
         [DBFieldName("IconName")]
         public string IconName;
 
+		[DBFieldName("minlevel")]
+		[DBFieldName("maxlevel")]
+		public int Level;
+
+		[DBFieldName("type")]
+		public CreatureType Type;
+
         [DBFieldName("type_flags")]
         public CreatureTypeFlag TypeFlags;
 
         [DBFieldName("type_flags2", ClientVersionBuild.V4_0_1_13164)]
         public uint TypeFlags2;
-
-        [DBFieldName("type")]
-        public CreatureType Type;
 
         [DBFieldName("family")]
         public CreatureFamily Family;
@@ -40,8 +44,8 @@ namespace WowPacketParser.Store.Objects
         [DBFieldName("UnkInt", ClientVersionBuild.Zero, ClientVersionBuild.V3_1_0_9767)]
         public int UnkInt;
 
-        [DBFieldName("PetSpellDataId")]
-        public uint PetSpellData;
+        /*[DBFieldName("PetSpellDataId")]
+        public uint PetSpellData;*/
 
         [DBFieldName("modelid", 4)]
         public uint[] DisplayIds;
@@ -55,8 +59,8 @@ namespace WowPacketParser.Store.Objects
         [DBFieldName("RacialLeader")]
         public bool RacialLeader;
 
-        [DBFieldName("questItem", 6)]
-        public uint[] QuestItems;
+       /* [DBFieldName("questItem", 6)]
+        public uint[] QuestItems;*/
 
         [DBFieldName("movementId")]
         public uint MovementId;

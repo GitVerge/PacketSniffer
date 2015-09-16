@@ -64,10 +64,10 @@ namespace WowPacketParserModule.V5_4_7_17898.Parsers
             creature.KillCredits[1] = packet.ReadUInt32();
             creature.DisplayIds[2] = packet.ReadUInt32();
 
-            creature.QuestItems = new uint[qItemCount];
+            /*creature.QuestItems = new uint[qItemCount];
             for (var i = 0; i < qItemCount; ++i)
                 creature.QuestItems[i] = (uint)packet.ReadInt32<ItemId>("Quest Item", i);
-
+			*/
             creature.Type = packet.ReadInt32E<CreatureType>("Type");
 
             if (bits2C > 1)

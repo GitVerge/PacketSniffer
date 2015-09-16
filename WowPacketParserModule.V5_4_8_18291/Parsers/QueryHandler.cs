@@ -83,10 +83,10 @@ namespace WowPacketParserModule.V5_4_8_18291.Parsers
             if (bits2C > 1)
                 creature.IconName = packet.ReadCString("Icon Name"); //+100
 
-            creature.QuestItems = new uint[qItemCount];
+            /*creature.QuestItems = new uint[qItemCount];
             for (var i = 0; i < qItemCount; ++i)
                 creature.QuestItems[i] = (uint)packet.ReadInt32<ItemId>("Quest Item", i); //+72
-
+			*/
             creature.KillCredits[1] = packet.ReadUInt32(); //+28
             creature.Modifier2 = packet.ReadSingle("Modifier 2"); //+16
             creature.Family = packet.ReadInt32E<CreatureFamily>("Family"); //+13

@@ -82,10 +82,10 @@ namespace WowPacketParser.SQL.Builders
                             var row = new QueryBuilder.SQLInsertRow();
 
                             row.AddValue("questId", quest.Key.Item1);
-                            row.AddValue("id", quest.Key.Item2);
-                            row.AddValue("idx", point.Index); // Not on sniffs
-                            row.AddValue("x", point.X);
-                            row.AddValue("y", point.Y);
+                            row.AddValue("Idx1", quest.Key.Item2);
+                            row.AddValue("Idx2", point.Index); // Not on sniffs
+                            row.AddValue("X", point.X);
+                            row.AddValue("Y", point.Y);
                             row.AddValue("VerifiedBuild", point.VerifiedBuild);
                             row.Comment = StoreGetters.GetName(StoreNameType.Quest, (int) quest.Key.Item1, false);
 

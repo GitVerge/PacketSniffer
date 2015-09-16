@@ -24,11 +24,15 @@ namespace WowPacketParser.SQL.Builders
                 return string.Empty;
 
             const string tableName = "creature_template_addon";
+			var uni = new List<UInt32>();
 
             var rows = new List<QueryBuilder.SQLInsertRow>();
             foreach (var unit in units)
             {
                 var npc = unit.Value;
+
+				if (uni.Contains(unit.Key.GetEntry()))
+                    continue;
 
                 if (Settings.AreaFilters.Length > 0)
                     if (!(npc.Area.ToString(CultureInfo.InvariantCulture).MatchesFilters(Settings.AreaFilters)))
@@ -58,18 +62,19 @@ namespace WowPacketParser.SQL.Builders
                             continue;
 
                         auras += aura.SpellId + " ";
-                        commentAuras += StoreGetters.GetName(StoreNameType.Spell, (int) aura.SpellId, false) + ", ";
+                        //commentAuras += StoreGetters.GetName(StoreNameType.Spell, (int) aura.SpellId, false) + ", ";
                     }
                     auras = auras.TrimEnd(' ');
-                    commentAuras = commentAuras.TrimEnd(',', ' ');
+                    //commentAuras = commentAuras.TrimEnd(',', ' ');
                 }
                 row.AddValue("auras", auras);
 
-                row.Comment += StoreGetters.GetName(StoreNameType.Unit, (int)unit.Key.GetEntry(), false);
+                /*row.Comment += StoreGetters.GetName(StoreNameType.Unit, (int)unit.Key.GetEntry(), false);
                 if (!String.IsNullOrWhiteSpace(auras))
-                    row.Comment += " - " + commentAuras;
+                    row.Comment += " - " + commentAuras;*/
 
                 rows.Add(row);
+				uni.Add(unit.Key.GetEntry());
             }
 
             return new QueryBuilder.SQLInsert(tableName, rows).Build();
@@ -214,12 +219,15 @@ namespace WowPacketParser.SQL.Builders
             if (!Settings.SQLOutputFlag.HasAnyFlagBit(SQLOutput.creature_equip_template))
                 return string.Empty;
 
+			var rows = new List<QueryBuilder.SQLInsertRow>();
+
             var equips = new StoreDictionary<uint, CreatureEquipment>();
             foreach (var unit in units)
             {
                 var equip = new CreatureEquipment();
                 var npc = unit.Value;
-                var entry = unit.Key.GetEntry();
+                var CreatureID = unit.Key.GetEntry();
+				var row = new QueryBuilder.SQLInsertRow();
 
                 if (Settings.AreaFilters.Length > 0)
                     if (!(npc.Area.ToString(CultureInfo.InvariantCulture).MatchesFilters(Settings.AreaFilters)))
@@ -235,28 +243,37 @@ namespace WowPacketParser.SQL.Builders
                 if (npc.Equipment[0] == 0 && npc.Equipment[1] == 0 && npc.Equipment[2] == 0)
                     continue;
 
-                if (equips.ContainsKey(entry))
+				if (equips.ContainsKey(CreatureID))
                 {
-                    var existingEquip = equips[entry].Item1;
+					var existingEquip = equips[CreatureID].Item1;
 
                     if (existingEquip.ItemEntry1 != npc.Equipment[0] ||
                           existingEquip.ItemEntry2 != npc.Equipment[1] ||
                           existingEquip.ItemEntry3 != npc.Equipment[2])
-                        equips.Remove(entry); // no conflicts
+						equips.Remove(CreatureID); // no conflicts
 
                     continue;
                 }
 
+				/*equip.ID = 1;
                 equip.ItemEntry1 = npc.Equipment[0];
                 equip.ItemEntry2 = npc.Equipment[1];
-                equip.ItemEntry3 = npc.Equipment[2];
+                equip.ItemEntry3 = npc.Equipment[2];*/
 
-                equips.Add(entry, equip);
+				row.AddValue("CreatureID", CreatureID);
+				row.AddValue("ID", 1);
+				row.AddValue("ItemID1", npc.Equipment[0]);
+				row.AddValue("ItemID2", npc.Equipment[1]);
+				row.AddValue("ItemID3", npc.Equipment[2]);
+
+				equips.Add(CreatureID, equip);
+				rows.Add(row);
             }
 
             var entries = equips.Keys();
-            var equipsDb = SQLDatabase.GetDict<uint, CreatureEquipment>(entries);
-            return SQLUtil.CompareDicts(equips, equipsDb, StoreNameType.Unit);
+            //var equipsDb = SQLDatabase.GetDict<uint, CreatureEquipment>(entries);
+            //return SQLUtil.CompareDicts(equips, equipsDb, StoreNameType.Unit);
+			return new QueryBuilder.SQLInsert("creature_equip_template", rows, withDelete: true).Build();
         }
 
         [BuilderMethod(Units = true)]
@@ -694,16 +711,21 @@ namespace WowPacketParser.SQL.Builders
         [BuilderMethod(Units = true)]
         public static string NpcTemplateNonWDB(Dictionary<WowGuid, Unit> units)
         {
-            if (ClientVersion.AddedInVersion(ClientType.WarlordsOfDraenor))
-                return string.Empty;
+           /* if (ClientVersion.AddedInVersion(ClientType.WarlordsOfDraenor))
+                return string.Empty;*/
 
             if (units.Count == 0)
                 return string.Empty;
 
-            if (!Settings.SQLOutputFlag.HasAnyFlagBit(SQLOutput.creature_template))
-                return string.Empty;
+            /*if (!Settings.SQLOutputFlag.HasAnyFlagBit(SQLOutput.creature_template))
+                return string.Empty;*/
 
             var levels = GetLevels(units);
+
+			var result = string.Empty;
+			const string tableName = "creature_template";
+			var rowsIns = new List<QueryBuilder.SQLUpdateRow>();
+			uint count = 0;
 
             var templates = new StoreDictionary<uint, UnitTemplateNonWDB>();
             foreach (var unit in units)
@@ -711,24 +733,26 @@ namespace WowPacketParser.SQL.Builders
                 if (templates.ContainsKey(unit.Key.GetEntry()))
                     continue;
 
+				var row = new QueryBuilder.SQLUpdateRow();
+
                 var npc = unit.Value;
                 var template = new UnitTemplateNonWDB
                 {
-                    GossipMenuId = npc.GossipId,
+                    //GossipMenuId = npc.GossipId,
                     MinLevel = (int) levels[unit.Key.GetEntry()].Item1,
                     MaxLevel = (int) levels[unit.Key.GetEntry()].Item2,
                     Faction = npc.Faction.GetValueOrDefault(35),
                     NpcFlag = (uint) npc.NpcFlags.GetValueOrDefault(NPCFlags.None),
                     SpeedRun = npc.Movement.RunSpeed,
-                    SpeedWalk = npc.Movement.WalkSpeed,
-                    BaseAttackTime = npc.MeleeTime.GetValueOrDefault(2000),
+                    SpeedWalk = npc.Movement.WalkSpeed
+                    /*BaseAttackTime = npc.MeleeTime.GetValueOrDefault(2000),
                     RangedAttackTime = npc.RangedTime.GetValueOrDefault(2000),
                     UnitClass = (uint) npc.Class.GetValueOrDefault(Class.Warrior),
                     UnitFlag = (uint) npc.UnitFlags.GetValueOrDefault(UnitFlags.None),
                     UnitFlag2 = (uint) npc.UnitFlags2.GetValueOrDefault(UnitFlags2.None),
                     DynamicFlag = (uint) npc.DynamicFlags.GetValueOrDefault(UnitDynamicFlags.None),
                     VehicleId = npc.Movement.VehicleId,
-                    HoverHeight = npc.HoverHeight.GetValueOrDefault(1.0f)
+                    HoverHeight = npc.HoverHeight.GetValueOrDefault(1.0f)*/
                 };
 
                 if (template.Faction == 1 || template.Faction == 2 || template.Faction == 3 ||
@@ -737,7 +761,7 @@ namespace WowPacketParser.SQL.Builders
                         template.Faction == 1629 || template.Faction == 2203 || template.Faction == 2204) // player factions
                     template.Faction = 35;
 
-                template.UnitFlag &= ~(uint)UnitFlags.IsInCombat;
+               /* template.UnitFlag &= ~(uint)UnitFlags.IsInCombat;
                 template.UnitFlag &= ~(uint)UnitFlags.PetIsAttackingTarget;
                 template.UnitFlag &= ~(uint)UnitFlags.PlayerControlled;
                 template.UnitFlag &= ~(uint)UnitFlags.Silenced;
@@ -756,7 +780,7 @@ namespace WowPacketParser.SQL.Builders
                     template.DynamicFlag &= ~(uint)UnitDynamicFlagsWOD.Tapped;
                     template.DynamicFlag &= ~(uint)UnitDynamicFlagsWOD.TappedByPlayer;
                     template.DynamicFlag &= ~(uint)UnitDynamicFlagsWOD.TappedByAllThreatList;
-                }
+                }*/
 
                 // has trainer flag but doesn't have prof nor class trainer flag
                 if ((template.NpcFlag & (uint) NPCFlags.Trainer) != 0 &&
@@ -775,12 +799,28 @@ namespace WowPacketParser.SQL.Builders
                     else // In case we have NonWDB data which doesn't have an entry in UnitTemplates
                         template.NpcFlag |= ProcessNpcFlags(subname);
                 }
+				row.AddValue("minlevel", template.MinLevel);
+				row.AddValue("maxlevel", template.MaxLevel);
+				row.AddValue("faction", template.Faction);
+				row.AddValue("npcflag", template.NpcFlag);
+				row.AddValue("speed_walk", template.SpeedWalk);
+				row.AddValue("speed_run", template.SpeedRun);
+
+				row.AddWhere("entry", unit.Key.GetEntry());
+
+				row.Table = tableName;
+				rowsIns.Add(row);
+				count++;
 
                 templates.Add(unit.Key.GetEntry(), template);
             }
 
-            var templatesDb = SQLDatabase.GetDict<uint, UnitTemplateNonWDB>(templates.Keys());
-            return SQLUtil.CompareDicts(templates, templatesDb, StoreNameType.Unit);
+			//result += new QueryBuilder.SQLDelete(Tuple.Create("@ID+0", "@ID+" + (count - 1)), "entry", tableName).Build();
+			result += new QueryBuilder.SQLUpdate(rowsIns).Build();
+			return result;
+
+            /*var templatesDb = SQLDatabase.GetDict<uint, UnitTemplateNonWDB>(templates.Keys());
+            return SQLUtil.CompareDicts(templates, templatesDb, StoreNameType.Unit);*/
         }
 
         // Non-WDB data but nevertheless data that should be saved to creature_template

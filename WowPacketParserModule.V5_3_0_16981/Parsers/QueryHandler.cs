@@ -58,10 +58,10 @@ namespace WowPacketParserModule.V5_3_0_16981.Parsers
 
             creature.Rank = packet.ReadInt32E<CreatureRank>("Rank");
 
-            creature.QuestItems = new uint[qItemCount];
+           /* creature.QuestItems = new uint[qItemCount];
             for (var i = 0; i < qItemCount; ++i)
                 creature.QuestItems[i] = (uint)packet.ReadInt32<ItemId>("Quest Item", i);
-
+			*/
             creature.Type = packet.ReadInt32E<CreatureType>("Type");
             creature.KillCredits = new uint[2];
             for (var i = 0; i < 2; ++i)

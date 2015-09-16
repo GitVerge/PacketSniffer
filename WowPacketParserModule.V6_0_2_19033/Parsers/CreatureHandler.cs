@@ -68,8 +68,8 @@ namespace WowPacketParserModule.V6_0_2_19033.Parsers
             creature.Modifier1 = packet.ReadSingle("HpMulti");
             creature.Modifier2 = packet.ReadSingle("EnergyMulti");
 
-            creature.QuestItems = new uint[6];
-            var questItems = packet.ReadInt32("QuestItems");
+            /*creature.QuestItems = new uint[6];
+            var questItems = packet.ReadInt32("QuestItems");*/
             creature.MovementId = packet.ReadUInt32("CreatureMovementInfoID");
             creature.Expansion = packet.ReadUInt32E<ClientType>("RequiredExpansion");
             packet.ReadInt32("FlagQuest");
@@ -83,9 +83,9 @@ namespace WowPacketParserModule.V6_0_2_19033.Parsers
             if (bits28 > 1)
                 creature.IconName = packet.ReadCString("CursorName");
 
-            for (var i = 0; i < questItems; ++i)
+            /*for (var i = 0; i < questItems; ++i)
                 creature.QuestItems[i] = (uint)packet.ReadInt32<ItemId>("Quest Item", i);
-
+			*/
             packet.AddSniffData(StoreNameType.Unit, entry.Key, "QUERY_RESPONSE");
 
             Storage.UnitTemplates.Add((uint)entry.Key, creature, packet.TimeSpan);

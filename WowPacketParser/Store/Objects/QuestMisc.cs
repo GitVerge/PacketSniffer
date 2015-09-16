@@ -68,10 +68,10 @@ namespace WowPacketParser.Store.Objects
     [DBTableName("quest_request_items")]
     public class QuestRequestItems
     {
-        [DBFieldName("CompEmoteType")]
+        [DBFieldName("EmoteOnComplete")]
         public int CompEmoteType;
 
-        [DBFieldName("CompEmoteDelay")]
+        [DBFieldName("EmoteOnCompleteDelay")]
         public int CompEmoteDelay;
 
         [DBFieldName("CompletionText")]

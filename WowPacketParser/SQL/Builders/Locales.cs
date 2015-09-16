@@ -90,6 +90,9 @@ namespace WowPacketParser.SQL.Builders
                     var row = new QueryBuilder.SQLUpdateRow();
                     var localesQuestDB = SQLDatabase.LocalesQuestStores[Tuple.Create(localesQuest.Key.Item1, localesQuest.Key.Item2)];
 
+					row.AddWhere("ID", localesQuest.Key.Item1);
+					row.AddWhere("locale", localesQuest.Key.Item2);
+
                     if (!Utilities.EqualValues(localesQuestDB.LogTitle, localesQuest.Value.Item1.LogTitle))
                         row.AddValue("LogTitle", localesQuest.Value.Item1.LogTitle);
 
@@ -101,9 +104,6 @@ namespace WowPacketParser.SQL.Builders
 
                     if (!Utilities.EqualValues(localesQuestDB.AreaDescription, localesQuest.Value.Item1.AreaDescription))
                         row.AddValue("AreaDescription", localesQuest.Value.Item1.AreaDescription);
-
-                    if (!Utilities.EqualValues(localesQuestDB.QuestCompletionLog, localesQuest.Value.Item1.QuestCompletionLog))
-                        row.AddValue("QuestCompletionLog", localesQuest.Value.Item1.QuestCompletionLog);
 
                     if (!Utilities.EqualValues(localesQuestDB.PortraitGiverText, localesQuest.Value.Item1.PortraitGiverText))
                         row.AddValue("PortraitGiverText", localesQuest.Value.Item1.PortraitGiverText);
@@ -117,11 +117,11 @@ namespace WowPacketParser.SQL.Builders
                     if (!Utilities.EqualValues(localesQuestDB.PortraitTurnInName, localesQuest.Value.Item1.PortraitTurnInName))
                         row.AddValue("PortraitTurnInName", localesQuest.Value.Item1.PortraitTurnInName);
 
+					if (!Utilities.EqualValues(localesQuestDB.QuestCompletionLog, localesQuest.Value.Item1.QuestCompletionLog))
+						row.AddValue("QuestCompletionLog", localesQuest.Value.Item1.QuestCompletionLog);
+
                     if (!Utilities.EqualValues(localesQuestDB.VerifiedBuild, localesQuest.Value.Item1.VerifiedBuild))
                         row.AddValue("VerifiedBuild", localesQuest.Value.Item1.VerifiedBuild);
-
-                    row.AddWhere("ID", localesQuest.Key.Item1);
-                    row.AddWhere("locale", localesQuest.Key.Item2);
 
                     row.Table = tableName;
 
@@ -177,6 +177,9 @@ namespace WowPacketParser.SQL.Builders
                     var row = new QueryBuilder.SQLUpdateRow();
                     var localesQuestObjectiveDB = SQLDatabase.LocalesQuestObjectiveStores[Tuple.Create(localesQuestObjective.Key.Item1, localesQuestObjective.Key.Item2)];
 
+					row.AddWhere("ID", localesQuestObjective.Key.Item1);
+					row.AddWhere("locale", localesQuestObjective.Key.Item2);
+
                     if (!Utilities.EqualValues(localesQuestObjectiveDB.QuestId, localesQuestObjective.Value.Item1.QuestId))
                         row.AddValue("QuestId", localesQuestObjective.Value.Item1.QuestId);
 
@@ -188,9 +191,6 @@ namespace WowPacketParser.SQL.Builders
 
                     if (!Utilities.EqualValues(localesQuestObjectiveDB.VerifiedBuild, localesQuestObjective.Value.Item1.VerifiedBuild))
                         row.AddValue("VerifiedBuild", localesQuestObjective.Value.Item1.VerifiedBuild);
-
-                    row.AddWhere("ID", localesQuestObjective.Key.Item1);
-                    row.AddWhere("locale", localesQuestObjective.Key.Item2);
 
                     row.Table = tableName;
 

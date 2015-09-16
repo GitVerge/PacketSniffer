@@ -68,10 +68,10 @@ namespace WowPacketParserModule.V5_4_2_17658.Parsers
             creature.KillCredits[0] = packet.ReadUInt32("Kill Credit 1");
             creature.DisplayIds[3] = packet.ReadUInt32("Display ID 3");
 
-            creature.QuestItems = new uint[qItemCount];
+            /*creature.QuestItems = new uint[qItemCount];
             for (var i = 0; i < qItemCount; ++i)
                 creature.QuestItems[i] = (uint)packet.ReadInt32<ItemId>("Quest Item", i);
-
+			*/
             creature.Modifier1 = packet.ReadSingle("Modifier 1");
 
 
